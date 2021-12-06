@@ -33,10 +33,10 @@ class MTAgentBehaviour(
             sum += receivedMessage.content.toDouble()
         }
         number = (number + sum) * alpha
-        state++
 
         if ((state == nodesNum * 2 - 1) and (name.toString() == "0"))
         println("$number")
+        state++
     }
 
     override fun done(): Boolean {
