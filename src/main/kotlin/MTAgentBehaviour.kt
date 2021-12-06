@@ -32,8 +32,11 @@ class MTAgentBehaviour(
             val receivedMessage = agent.blockingReceive()
             sum += receivedMessage.content.toDouble()
         }
+
+//      Update our number
         number = (number + sum) * alpha
 
+//      Print result if we are the first node
         if ((state == nodesNum * 2 - 1) and (name.toString() == "0"))
         println("$number")
         state++
