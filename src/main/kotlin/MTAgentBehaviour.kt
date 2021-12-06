@@ -1,18 +1,14 @@
 import jade.core.AID
 import jade.core.behaviours.SimpleBehaviour
 import jade.lang.acl.ACLMessage
-
-fun mapToString(hMap: HashMap<AID, Int>): String {
-    return hMap.map({ (aid, value) -> "${aid.name.split("@")[0]}: $value" }).toString()
-}
+import kotlin.random.Random
 
 class MTAgentBehaviour(
     private val agent: MTAgent,
     private var number: Double,
     private val nodesNum: Int,
     private val connectedAgents: List<AID>
-) :
-    SimpleBehaviour() {
+) : SimpleBehaviour() {
     private var state: Int = 0
     private val alpha: Double = 1.0 / nodesNum.toDouble()
     private val name = agent.name.split("@")[0]
@@ -30,20 +26,28 @@ class MTAgentBehaviour(
         var sum: Double = 0.0
         for (i in 1..connectedAgents.size) {
             val receivedMessage = agent.blockingReceive()
-            sum += receivedMessage.content.toDouble()
+//          Chance to lose message
+            if (Random.nextDouble() > 0.1) {
+//              Generating noise
+                val error = if (Random.nextDouble() > 0.9) {
+                    Random.nextDouble(0.0, 0.3) - 0.2
+                } else {
+                    0.0
+                }
+                sum += receivedMessage.content.toDouble() - error
+            }
         }
 
 //      Update our number
         number = (number + sum) * alpha
 
 //      Print result if we are the first node
-        if ((state == nodesNum * 2 - 1) and (name.toString() == "0"))
-        println("$number")
+        if ((state == nodesNum) and (name.toString() == "0")) println("$number")
         state++
     }
 
     override fun done(): Boolean {
-        return state == nodesNum * 2;
+        return state == nodesNum + 1
     }
 
 }
